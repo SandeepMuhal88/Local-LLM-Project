@@ -1,0 +1,5 @@
+Machine Learning is a method where systems learn from data.
+
+Deep Learning is a subset of ML using neural networks.
+
+Transformers are models used in NLP tasks.
