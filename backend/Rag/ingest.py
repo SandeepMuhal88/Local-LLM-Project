@@ -1,22 +1,32 @@
-from langchain.document_loaders import TextLoader
-from langchain.text_splitter import CharacterTextSplitter
-from langchain.embeddings import HuggingFaceEmbeddings
-from langchain.vectorstores import Chroma
+# 
 
-# Load file
-loader = TextLoader("rag/data/notes.txt")
-documents = loader.load()
 
-# Split text
-text_splitter = CharacterTextSplitter(chunk_size=200, chunk_overlap=20)
-docs = text_splitter.split_documents(documents)
+from sentence_transformers import SentenceTransformer
+import chromadb
+
+# Load embedding model
+model = SentenceTransformer("all-MiniLM-L6-v2")
+
+# Read file
+with open("rag/data.txt", "r", encoding="utf-8") as f:
+    text = f.read()
+
+# Split into chunks
+chunks = text.split("\n\n")
 
 # Create embeddings
-embedding = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+embeddings = model.encode(chunks)
 
-# Store in vector DB
-db = Chroma.from_documents(docs, embedding, persist_directory="rag/db")
+# Create DB
+client = chromadb.Client()
+collection = client.create_collection("my_data")
 
-db.persist()
+# Store data
+for i, chunk in enumerate(chunks):
+    collection.add(
+        documents=[chunk],
+        embeddings=[embeddings[i]],
+        ids=[str(i)]
+    )
 
-print("✅ Data embedded and stored")
+print("✅ Data stored in vector DB")
