@@ -1,32 +1,41 @@
-# 
-
-
+import os
 from sentence_transformers import SentenceTransformer
 import chromadb
 
-# Load embedding model
+# ================= CONFIG =================
+DATA_PATH = r"A:\Programming-Language-\Local-LLM-PRoject\Programing\Testing-code\backend\Rag\data.txt"
+DB_PATH = r"A:\Programming-Language-\Local-LLM-PRoject\Programing\Testing-code\backend\Rag\db"
+COLLECTION_NAME = "my_data"
+
+# ================ LOAD MODEL ================
 model = SentenceTransformer("all-MiniLM-L6-v2")
 
-# Read file
-with open("rag/data.txt", "r", encoding="utf-8") as f:
+# ================ READ FILE =================
+with open(DATA_PATH, "r", encoding="utf-8") as f:
     text = f.read()
 
-# Split into chunks
-chunks = text.split("\n\n")
+# ================ CHUNKING ==================
+chunks = [c.strip() for c in text.split("\n\n") if c.strip()]
 
-# Create embeddings
-embeddings = model.encode(chunks)
+print(f"📄 Total chunks: {len(chunks)}")
 
-# Create DB
-client = chromadb.Client()
-collection = client.create_collection("my_data")
+# ================ EMBEDDINGS ================
+embeddings = model.encode(chunks).tolist()
 
-# Store data
-for i, chunk in enumerate(chunks):
-    collection.add(
-        documents=[chunk],
-        embeddings=[embeddings[i]],
-        ids=[str(i)]
-    )
+# ================ DB CLIENT =================
+client = chromadb.PersistentClient(path=DB_PATH)
 
-print("✅ Data stored in vector DB")
+# Create / Load collection
+collection = client.get_or_create_collection(name=COLLECTION_NAME)
+
+# Optional: clear old data (for fresh ingest)
+# collection.delete(where={})
+
+# ================ STORE DATA ===============
+collection.add(
+    documents=chunks,
+    embeddings=embeddings,
+    ids=[str(i) for i in range(len(chunks))]
+)
+
+print("✅ Data stored successfully in ChromaDB")

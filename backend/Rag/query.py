@@ -44,46 +44,80 @@ from sentence_transformers import SentenceTransformer
 import chromadb
 from llama_cpp import Llama
 
-# Load embedding model
+# ================= CONFIG =================
+DB_PATH = r"A:\Programming-Language-\Local-LLM-PRoject\Programing\Testing-code\backend\Rag\db"
+COLLECTION_NAME = "my_data"
+
+MODEL_PATH = r"A:\Programming-Language-\Local-LLM-PRoject\Programing\Testing-code\llama.cpp\models\phi-3-mini.gguf"
+
+TOP_K = 3
+
+# ================ LOAD MODELS ================
 embed_model = SentenceTransformer("all-MiniLM-L6-v2")
 
-# Load DB
-client = chromadb.Client()
-collection = client.get_collection("my_data")
-
-# Load LLM
 llm = Llama(
-    model_path="../llama.cpp/models/phi-3-mini.gguf",
+    model_path=MODEL_PATH,
     n_threads=8,
     n_ctx=2048
 )
 
-query = input("Ask: ")
+# ================ LOAD DB ====================
+client = chromadb.PersistentClient(path=DB_PATH)
 
-# Convert query to embedding
-query_embedding = embed_model.encode([query])[0]
+try:
+    collection = client.get_collection(COLLECTION_NAME)
+except:
+    print("❌ Collection not found. Run ingest.py first.")
+    exit()
 
-# Search similar data
-results = collection.query(
-    query_embeddings=[query_embedding],
-    n_results=2
-)
+# ================ QUERY LOOP =================
+while True:
+    query = input("\nAsk (or 'exit'): ")
 
-context = "\n".join(results["documents"][0])
+    if query.lower() == "exit":
+        break
 
-# Final prompt
-prompt = f"""
-Use this context to answer:
+    # ---- Embed Query ----
+    query_embedding = embed_model.encode([query]).tolist()[0]
 
+    # ---- Search ----
+    results = collection.query(
+        query_embeddings=[query_embedding],
+        n_results=TOP_K
+    )
+
+    docs = results["documents"][0]
+
+    if not docs:
+        print("⚠️ No relevant data found")
+        continue
+
+    # ---- Build Context ----
+    context = "\n\n".join(docs)
+
+    # ---- Prompt Engineering ----
+    prompt = f"""
+You are a helpful AI assistant.
+
+Answer ONLY using the provided context.
+If answer is not in context, say "I don't know".
+
+Context:
 {context}
 
 Question: {query}
+
+Answer:
 """
 
-# Generate answer
-output = llm(
-    prompt,
-    max_tokens=200
-)
+    # ---- Generate ----
+    output = llm(
+        prompt,
+        max_tokens=200,
+        temperature=0.3,
+        top_p=0.9
+    )
 
-print("\nAI Answer:\n", output["choices"][0]["text"])
+    answer = output["choices"][0]["text"].strip()
+
+    print("\n🧠 AI Answer:\n", answer)
