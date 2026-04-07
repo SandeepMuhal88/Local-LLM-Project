@@ -144,16 +144,295 @@ This process is called **Auto-Regressive Inference**
 
 ---
 
-## 🔜 Next Phase
 
-### Phase-2: Retrieval-Augmented Generation (RAG)
+# 🚀 NoNet AI — Local AI Assistant (Fully Offline + RAG + Mobile App)
 
-* Embeddings (MiniLM / BGE)
-* Vector DB (FAISS / ChromaDB)
-* Context-aware responses
-* Personal knowledge memory
+## 📌 Overview
+
+**NoNet AI** is a fully local AI assistant system that runs **without internet APIs**.
+It combines:
+
+* 🧠 Local LLM (Phi-3 via llama.cpp)
+* 📚 RAG (Retrieval-Augmented Generation)
+* ⚡ FastAPI backend
+* 📱 Flutter mobile app
+
+The system is designed to provide a **ChatGPT-like experience locally**, with support for:
+
+* Streaming responses
+* Voice input (optional)
+* Custom knowledge (RAG)
+* Mobile UI
 
 ---
+
+## 🏗️ System Architecture
+
+```
+Flutter App (UI)
+        ↓
+FastAPI Backend
+        ↓
+RAG System (ChromaDB + Embeddings)
+        ↓
+LLM (Phi-3 via llama.cpp)
+        ↓
+Response (Streaming)
+```
+
+---
+
+## ⚙️ Tech Stack
+
+### 🔹 Backend
+
+* Python
+* FastAPI
+* llama-cpp-python
+* Sentence Transformers
+* ChromaDB
+
+### 🔹 Frontend
+
+* Flutter (Dart)
+* HTTP streaming
+* Material UI
+
+### 🔹 AI Stack
+
+* Model: Phi-3 Mini (GGUF)
+* Embedding: all-MiniLM-L6-v2
+* Vector DB: ChromaDB
+
+---
+
+## 🧠 Features
+
+### ✅ Local LLM
+
+* Runs completely offline
+* No API dependency
+* Uses quantized GGUF model
+
+### ✅ RAG (Knowledge System)
+
+* Custom data ingestion
+* Semantic search via embeddings
+* Context-aware responses
+
+### ✅ Chat System
+
+* Multi-turn conversation
+* Context memory (short-term)
+
+### ✅ Streaming Responses
+
+* Token-by-token output (ChatGPT-like)
+
+### ✅ Mobile App (Flutter)
+
+* Chat UI
+* Streaming messages
+* Dark theme
+* Auto-scroll
+
+### ✅ Voice Input (Optional)
+
+* Speech-to-text integration
+
+---
+
+## 📁 Project Structure
+
+```
+project/
+ ├── llama.cpp/
+ ├── models/
+ │    └── phi-3-mini.gguf
+ │
+ ├── backend/
+ │    ├── api.py
+ │    └── Rag/
+ │         ├── ingest.py
+ │         ├── query.py
+ │         ├── rag_chat.py
+ │         └── db/
+ │
+ ├── ai_assistant_app/
+ │    └── lib/
+ │         ├── main.dart
+ │         ├── models/
+ │         ├── services/
+ │         └── screens/
+```
+
+---
+
+## 🔥 Setup Instructions
+
+---
+
+### 1️⃣ Clone Repository
+
+```bash
+git clone <your-repo>
+cd project
+```
+
+---
+
+### 2️⃣ Setup Backend
+
+#### Create Virtual Environment
+
+```bash
+python -m venv .venv
+.\.venv\Scripts\activate
+```
+
+#### Install Dependencies
+
+```bash
+pip install fastapi uvicorn llama-cpp-python sentence-transformers chromadb
+```
+
+---
+
+### 3️⃣ Run Backend
+
+```bash
+uvicorn api:app --reload
+```
+
+Open:
+
+```
+http://127.0.0.1:8000/docs
+```
+
+---
+
+### 4️⃣ Setup Flutter App
+
+```bash
+cd ai_assistant_app
+flutter pub get
+flutter run
+```
+
+---
+
+## ⚠️ Important Configuration
+
+### 🔹 Base URL (Flutter)
+
+```dart
+http://127.0.0.1:8000
+```
+
+> ❌ Do NOT use `10.0.2.2` for desktop
+> ✅ Use `127.0.0.1` for Windows
+
+---
+
+## 🧠 RAG Workflow
+
+```
+Text → Chunk → Embedding → Vector DB
+User Query → Embedding → Similarity Search → Context
+Context + Query → LLM → Answer
+```
+
+---
+
+## 🔧 Key Learnings
+
+### 1. Local AI Stack
+
+* LLM inference via llama.cpp
+* GGUF model optimization
+
+### 2. RAG Pipeline
+
+* Embeddings + vector search
+* Context grounding
+
+### 3. Backend Engineering
+
+* FastAPI
+* Streaming responses
+* CORS handling
+
+### 4. Frontend Integration
+
+* Flutter HTTP streaming
+* Real-time UI updates
+
+---
+
+## 🐛 Issues Faced & Fixes
+
+| Issue                     | Fix                                 |
+| ------------------------- | ----------------------------------- |
+| cmake not found           | Installed + added to PATH           |
+| Model not loading         | Correct GGUF placement              |
+| HuggingFace errors        | Used correct repo / manual download |
+| llama_cpp not found       | Installed in venv                   |
+| ChromaDB collection error | Used PersistentClient               |
+| No response in app        | Fixed API URL                       |
+| 405 OPTIONS error         | Enabled CORS                        |
+| FilePicker crash          | Used `FilePicker.platform`          |
+
+---
+
+## 🚀 Future Improvements
+
+* 🔥 Chat history persistence (SQLite)
+* 🔥 Sidebar (like ChatGPT)
+* 🔥 Voice output (TTS)
+* 🔥 Model optimization for mobile
+* 🔥 Offline mobile LLM
+* 🔥 Multi-file RAG (PDF, DOCX)
+
+---
+
+## 🎯 Goal
+
+Build a **fully local AI assistant** that:
+
+* Works without internet
+* Uses personal knowledge
+* Runs on personal hardware
+* Can be deployed on mobile
+
+---
+
+## 🧠 Author
+
+Built as part of a **Local LLM Project**
+Focused on learning:
+
+* AI systems
+* Backend engineering
+* Mobile integration
+* RAG pipelines
+
+---
+
+## ⭐ Final Result
+
+```
+✔ Local ChatGPT-like App
+✔ Fully Offline AI
+✔ Custom Knowledge System
+✔ Mobile UI + Backend Integration
+```
+
+---
+
+🔥 **NoNet AI = Your Personal Local Intelligence System**
+
+
 
 ## 🌟 Vision
 
