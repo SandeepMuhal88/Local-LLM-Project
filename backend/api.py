@@ -36,26 +36,59 @@ class QueryRequest(BaseModel):
 @app.post("/ask-stream")
 def ask_stream(req: QueryRequest):
 
-    query = req.question
+    query = req.question.strip()
 
+    # ================= 1. GREETING HANDLER =================
+    greetings = ["hi", "hello", "hey", "hii"]
+
+    if query.lower() in greetings:
+        def generate():
+            yield "Hello 👋 I am NoNet AI. How can I help you?"
+        return StreamingResponse(generate(), media_type="text/plain")
+
+    # ================= 2. EMBEDDING =================
     query_embedding = embed_model.encode([query]).tolist()[0]
-    results = collection.query(query_embeddings=[query_embedding], n_results=3)
+
+    results = collection.query(
+        query_embeddings=[query_embedding],
+        n_results=3
+    )
 
     docs = results["documents"][0]
-    context = "\n\n".join(docs) if docs else ""
+    distances = results["distances"][0]  # VERY IMPORTANT
 
+    # ================= 3. RELEVANCE CHECK =================
+    THRESHOLD = 0.6   # tune this (0.4–0.8)
+
+    if distances[0] > THRESHOLD:
+        context = ""   # irrelevant → ignore RAG
+    else:
+        context = "\n\n".join(docs)
+
+    # ================= 4. SMART PROMPT =================
     prompt = f"""
-Answer using context:
+You are NoNet AI, a helpful assistant.
 
+Rules:
+- If context is provided → use it
+- If context is empty → answer normally
+- Do not force context
+
+Context:
 {context}
 
-Question: {query}
+Question:
+{query}
+
+Answer:
 """
 
+    # ================= 5. STREAM RESPONSE =================
     def generate():
         stream = llm.create_chat_completion(
             messages=[{"role": "user", "content": prompt}],
             max_tokens=200,
+            temperature=0.4,
             stream=True
         )
 
