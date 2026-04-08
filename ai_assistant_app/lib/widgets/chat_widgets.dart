@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../theme/app_theme.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
@@ -13,7 +14,7 @@ class TypingIndicator extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         children: [
-          _AIAvatar(size: 28),
+          const _AIAvatar(size: 28),
           const SizedBox(width: 10),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -34,7 +35,7 @@ class TypingIndicator extends StatelessWidget {
                   margin: const EdgeInsets.symmetric(horizontal: 2.5),
                   width: 7,
                   height: 7,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     color: AppColors.accentSecondary,
                     shape: BoxShape.circle,
                   ),
@@ -70,8 +71,8 @@ class _AIAvatar extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        gradient: const LinearGradient(
-          colors: [AppColors.accentPrimary, AppColors.accentSecondary],
+        gradient: LinearGradient(
+          colors: [AppColors.gradStart, AppColors.accentSecondary],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -105,7 +106,10 @@ class _UserAvatar extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: AppColors.bgCard,
-        border: Border.all(color: AppColors.accentPrimary.withValues(alpha: 0.5), width: 1.5),
+        border: Border.all(
+          color: AppColors.accentPrimary.withValues(alpha: 0.5),
+          width: 1.5,
+        ),
       ),
       child: Icon(
         Icons.person_rounded,
@@ -116,7 +120,7 @@ class _UserAvatar extends StatelessWidget {
   }
 }
 
-// ─── Message Bubble (Gemini/ChatGPT style with Copy + Edit) ───────────────────
+// ─── Message Bubble ───────────────────────────────────────────────────────────
 class MessageBubble extends StatefulWidget {
   final String text;
   final bool isUser;
@@ -149,14 +153,9 @@ class _MessageBubbleState extends State<MessageBubble> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.isUser) {
-      return _buildUserMessage();
-    } else {
-      return _buildAIMessage();
-    }
+    return widget.isUser ? _buildUserMessage() : _buildAIMessage();
   }
 
-  // ── User message (right-aligned, bubble style) ────────────────────────────
   Widget _buildUserMessage() {
     final screenWidth = MediaQuery.of(context).size.width;
     final maxBubbleWidth = screenWidth < 600 ? screenWidth * 0.78 : 520.0;
@@ -170,7 +169,6 @@ class _MessageBubbleState extends State<MessageBubble> {
             mainAxisAlignment: MainAxisAlignment.end,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              // Action buttons (appear on long-press)
               AnimatedOpacity(
                 opacity: _showActions ? 1.0 : 0.0,
                 duration: 200.ms,
@@ -195,7 +193,6 @@ class _MessageBubbleState extends State<MessageBubble> {
                   ],
                 ),
               ),
-              // Bubble
               GestureDetector(
                 onLongPress: () => setState(() => _showActions = !_showActions),
                 onTap: () {
@@ -227,11 +224,10 @@ class _MessageBubbleState extends State<MessageBubble> {
                     ),
                     child: Text(
                       widget.text,
-                      style: const TextStyle(
+                      style: GoogleFonts.inter(
                         color: Colors.white,
                         fontSize: 15,
                         height: 1.55,
-                        fontFamily: 'Inter',
                       ),
                     ),
                   ),
@@ -249,20 +245,17 @@ class _MessageBubbleState extends State<MessageBubble> {
         .slideX(begin: 0.08, end: 0, duration: 300.ms, curve: Curves.easeOut);
   }
 
-  // ── AI message (left-aligned, flat style like Gemini) ────────────────────
   Widget _buildAIMessage() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Avatar row
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _AIAvatar(size: 30),
+              const _AIAvatar(size: 30),
               const SizedBox(width: 12),
-              // Text takes full remaining width
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -270,15 +263,13 @@ class _MessageBubbleState extends State<MessageBubble> {
                     const SizedBox(height: 4),
                     Text(
                       widget.text.isEmpty ? '...' : widget.text,
-                      style: const TextStyle(
+                      style: GoogleFonts.inter(
                         color: AppColors.textPrimary,
                         fontSize: 15,
                         height: 1.65,
-                        fontFamily: 'Inter',
                       ),
                     ),
                     const SizedBox(height: 8),
-                    // Action row below text (always visible, subtle)
                     if (widget.text.isNotEmpty)
                       Row(
                         children: [
@@ -310,7 +301,6 @@ class _MessageBubbleState extends State<MessageBubble> {
               ),
             ],
           ),
-          // Bottom border separator (subtle, like Gemini)
           const SizedBox(height: 6),
           Container(
             height: 0.5,
@@ -356,16 +346,6 @@ class _ActionIconBtnState extends State<_ActionIconBtn> {
 
     return Tooltip(
       message: widget.tooltip,
-      preferBelow: false,
-      decoration: BoxDecoration(
-        color: AppColors.bgCard,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      textStyle: const TextStyle(
-        color: AppColors.textPrimary,
-        fontSize: 11,
-        fontFamily: 'Inter',
-      ),
       child: MouseRegion(
         onEnter: (_) => setState(() => _hovered = true),
         onExit: (_) => setState(() => _hovered = false),
@@ -379,9 +359,7 @@ class _ActionIconBtnState extends State<_ActionIconBtn> {
             width: size,
             height: size,
             decoration: BoxDecoration(
-              color: _hovered
-                  ? AppColors.bgCard
-                  : Colors.transparent,
+              color: _hovered ? AppColors.bgCard : Colors.transparent,
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
                 color: _hovered ? AppColors.aiBubbleBorder : Colors.transparent,
@@ -392,9 +370,7 @@ class _ActionIconBtnState extends State<_ActionIconBtn> {
               child: Icon(
                 widget.icon,
                 size: iconSize,
-                color: widget.isSuccess
-                    ? AppColors.success
-                    : AppColors.textMuted,
+                color: widget.isSuccess ? AppColors.success : AppColors.textMuted,
               ),
             ),
           ),
@@ -404,7 +380,7 @@ class _ActionIconBtnState extends State<_ActionIconBtn> {
   }
 }
 
-// ─── Glowing Send Button ──────────────────────────────────────────────────────
+// ─── Send Button ──────────────────────────────────────────────────────────────
 class SendButton extends StatefulWidget {
   final VoidCallback onTap;
   final bool isLoading;
@@ -433,8 +409,8 @@ class _SendButtonState extends State<SendButton> {
         height: 44,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          gradient: const LinearGradient(
-            colors: [AppColors.accentPrimary, AppColors.accentSecondary],
+          gradient: LinearGradient(
+            colors: [AppColors.gradStart, AppColors.accentSecondary],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -460,138 +436,24 @@ class _SendButtonState extends State<SendButton> {
                 )
               : const Icon(Icons.arrow_upward_rounded, color: Colors.white, size: 20),
         ),
-      )
-          .animate(target: _pressed ? 1 : 0)
+      ).animate(target: _pressed ? 1 : 0)
           .scale(begin: const Offset(1, 1), end: const Offset(0.88, 0.88), duration: 100.ms),
     );
   }
 }
 
-// ─── Animated gradient AppBar ─────────────────────────────────────────────────
-class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final bool isOnline;
-  final VoidCallback onMenuTap;
-
-  const ChatAppBar({super.key, this.isOnline = true, required this.onMenuTap});
-
-  @override
-  Size get preferredSize => const Size.fromHeight(65);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 65 + MediaQuery.of(context).padding.top,
-      padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-      decoration: const BoxDecoration(
-        color: AppColors.bgSurface,
-        border: Border(
-          bottom: BorderSide(color: AppColors.aiBubbleBorder, width: 1),
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Row(
-          children: [
-            // Logo with glow + shimmer
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: const LinearGradient(
-                  colors: [AppColors.accentPrimary, AppColors.accentTertiary],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.accentPrimary.withValues(alpha: 0.4),
-                    blurRadius: 14,
-                    spreadRadius: 2,
-                  ),
-                ],
-              ),
-              child: const Icon(Icons.auto_awesome, color: Colors.white, size: 20),
-            )
-                .animate(onPlay: (c) => c.repeat(reverse: true))
-                .shimmer(duration: 2.5.seconds, color: AppColors.accentSecondary.withValues(alpha: 0.3)),
-            const SizedBox(width: 12),
-            // Title + status
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ShaderMask(
-                    shaderCallback: (bounds) => const LinearGradient(
-                      colors: [AppColors.accentPrimary, AppColors.accentSecondary],
-                    ).createShader(bounds),
-                    child: const Text(
-                      'NoNet AI',
-                      style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                        fontFamily: 'Inter',
-                        letterSpacing: -0.3,
-                      ),
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      Container(
-                        width: 7,
-                        height: 7,
-                        margin: const EdgeInsets.only(right: 5),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: isOnline ? AppColors.success : AppColors.error,
-                          boxShadow: [
-                            BoxShadow(
-                              color: (isOnline ? AppColors.success : AppColors.error)
-                                  .withValues(alpha: 0.6),
-                              blurRadius: 6,
-                              spreadRadius: 1,
-                            ),
-                          ],
-                        ),
-                      )
-                          .animate(onPlay: (c) => c.repeat(reverse: true))
-                          .fade(begin: 0.5, end: 1.0, duration: 1.2.seconds),
-                      Text(
-                        isOnline ? 'Local model · Online' : 'Offline',
-                        style: const TextStyle(
-                          fontSize: 11,
-                          color: AppColors.textSecondary,
-                          fontFamily: 'Inter',
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            // New chat button
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.add_comment_outlined, color: AppColors.textSecondary, size: 20),
-              tooltip: 'New chat',
-            ),
-            // Menu button
-            IconButton(
-              onPressed: onMenuTap,
-              icon: const Icon(Icons.more_vert_rounded, color: AppColors.textSecondary),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ─── Empty chat placeholder ───────────────────────────────────────────────────
+// ─── Empty Chat Placeholder ───────────────────────────────────────────────────
 class EmptyChatPlaceholder extends StatelessWidget {
-  const EmptyChatPlaceholder({super.key});
+  final String userName;
+  const EmptyChatPlaceholder({super.key, this.userName = ''});
+
+  String _getGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) return '🌅 Good Morning';
+    if (hour < 17) return '☀️ Good Afternoon';
+    if (hour < 20) return '🌆 Good Evening';
+    return '🌙 Good Night';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -603,14 +465,14 @@ class EmptyChatPlaceholder extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Animated logo
+            // Logo
             Container(
               width: 90,
               height: 90,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: const LinearGradient(
-                  colors: [AppColors.accentPrimary, AppColors.accentTertiary, AppColors.accentSecondary],
+                gradient: LinearGradient(
+                  colors: [AppColors.gradStart, AppColors.accentTertiary, AppColors.accentSecondary],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -631,18 +493,34 @@ class EmptyChatPlaceholder extends StatelessWidget {
                   duration: 2.seconds,
                   curve: Curves.easeInOut,
                 ),
-            const SizedBox(height: 28),
+
+            const SizedBox(height: 20),
+
+            // Greeting
+            if (userName.isNotEmpty)
+              Text(
+                '${_getGreeting()}, $userName! 👋',
+                style: GoogleFonts.inter(
+                  fontSize: 16,
+                  color: AppColors.textSecondary,
+                  fontWeight: FontWeight.w500,
+                ),
+                textAlign: TextAlign.center,
+              ).animate().fadeIn(delay: 100.ms, duration: 500.ms),
+
+            const SizedBox(height: 14),
+
+            // Title
             ShaderMask(
-              shaderCallback: (bounds) => const LinearGradient(
-                colors: [AppColors.accentPrimary, AppColors.accentSecondary],
+              shaderCallback: (bounds) => LinearGradient(
+                colors: [AppColors.gradStart, AppColors.accentSecondary],
               ).createShader(bounds),
               child: Text(
                 'How can I help you?',
-                style: TextStyle(
+                style: GoogleFonts.inter(
                   fontSize: screenWidth < 400 ? 22 : 26,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w800,
                   color: Colors.white,
-                  fontFamily: 'Inter',
                   letterSpacing: -0.5,
                 ),
                 textAlign: TextAlign.center,
@@ -651,42 +529,29 @@ class EmptyChatPlaceholder extends StatelessWidget {
                 .animate()
                 .fadeIn(delay: 200.ms, duration: 600.ms)
                 .slideY(begin: 0.1, end: 0, duration: 600.ms),
+
             const SizedBox(height: 8),
+
             Text(
               'Ask me anything. I run entirely on-device.',
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: GoogleFonts.inter(
                 fontSize: 14,
                 color: AppColors.textSecondary,
-                fontFamily: 'Inter',
               ),
             ).animate().fadeIn(delay: 400.ms, duration: 600.ms),
+
             const SizedBox(height: 36),
+
             Wrap(
               spacing: 10,
               runSpacing: 10,
               alignment: WrapAlignment.center,
               children: [
-                _SuggestionChip(
-                  icon: Icons.lightbulb_outline_rounded,
-                  label: 'Explain quantum computing',
-                  delay: 500,
-                ),
-                _SuggestionChip(
-                  icon: Icons.code_rounded,
-                  label: 'Write a Python script',
-                  delay: 600,
-                ),
-                _SuggestionChip(
-                  icon: Icons.translate_rounded,
-                  label: 'Translate to Hindi',
-                  delay: 700,
-                ),
-                _SuggestionChip(
-                  icon: Icons.summarize_rounded,
-                  label: 'Summarize a document',
-                  delay: 800,
-                ),
+                _SuggestionChip(icon: Icons.lightbulb_outline_rounded, label: 'Explain quantum computing', delay: 500),
+                _SuggestionChip(icon: Icons.code_rounded, label: 'Write a Python script', delay: 600),
+                _SuggestionChip(icon: Icons.translate_rounded, label: 'Translate to Hindi', delay: 700),
+                _SuggestionChip(icon: Icons.summarize_rounded, label: 'Summarize a document', delay: 800),
               ],
             ),
           ],
@@ -701,11 +566,7 @@ class _SuggestionChip extends StatefulWidget {
   final String label;
   final int delay;
 
-  const _SuggestionChip({
-    required this.icon,
-    required this.label,
-    this.delay = 0,
-  });
+  const _SuggestionChip({required this.icon, required this.label, this.delay = 0});
 
   @override
   State<_SuggestionChip> createState() => _SuggestionChipState();
@@ -726,7 +587,9 @@ class _SuggestionChipState extends State<_SuggestionChip> {
           color: _hovered ? AppColors.bgCard : AppColors.bgSurface,
           borderRadius: BorderRadius.circular(30),
           border: Border.all(
-            color: _hovered ? AppColors.accentPrimary.withValues(alpha: 0.5) : AppColors.aiBubbleBorder,
+            color: _hovered
+                ? AppColors.accentPrimary.withValues(alpha: 0.5)
+                : AppColors.aiBubbleBorder,
           ),
         ),
         child: Row(
@@ -736,10 +599,9 @@ class _SuggestionChipState extends State<_SuggestionChip> {
             const SizedBox(width: 7),
             Text(
               widget.label,
-              style: const TextStyle(
+              style: GoogleFonts.inter(
                 fontSize: 13,
                 color: AppColors.textSecondary,
-                fontFamily: 'Inter',
               ),
             ),
           ],

@@ -22,7 +22,12 @@ app.add_middleware(
 DB_PATH = r"A:\Programming-Language-\Local-LLM-PRoject\Programing\Testing-code\backend\Rag\db"
 MODEL_PATH = r"A:\Programming-Language-\Local-LLM-PRoject\Programing\Testing-code\llama.cpp\models\phi-3-mini.gguf"
 
-embed_model = SentenceTransformer("all-MiniLM-L6-v2")
+# embed_model = SentenceTransformer("all-MiniLM-L6-v2")  # This Online Model and its not working Offline 
+
+
+embed_model = SentenceTransformer(
+    r"A:\Programming-Language-\Local-LLM-PRoject\Programing\Testing-code\models\all-MiniLM-L6-v2"
+)
 llm = Llama(model_path=MODEL_PATH, n_threads=8, n_ctx=2048)
 
 client = chromadb.PersistentClient(path=DB_PATH)
