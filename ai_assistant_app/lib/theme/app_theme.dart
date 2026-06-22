@@ -1,158 +1,105 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
-// ─── Dark Color Palette (Gemini-inspired) ──────────────────────────────────────
-class DarkColors {
-  static const Color bgDeep    = Color(0xFF0A0A0F);
-  static const Color bgBase    = Color(0xFF0F0F17);
-  static const Color bgSurface = Color(0xFF1A1A2E);
-  static const Color bgCard    = Color(0xFF16213E);
-  static const Color bgInputBar= Color(0xFF0D0D1A);
-  static const Color bgGlass   = Color(0x1AFFFFFF);
-
-  // Gemini standard: Blue-purple + teal
-  static const Color accentPrimary   = Color(0xFF4A90D9); // Google blue
-  static const Color accentSecondary = Color(0xFF8B5CF6); // Purple
-  static const Color accentTertiary  = Color(0xFF06B6D4); // Cyan/Teal
-  static const Color accentGold      = Color(0xFFF59E0B); // Amber
-
-  static const Color gradStart = Color(0xFF4A90D9);
-  static const Color gradMid   = Color(0xFF8B5CF6);
-  static const Color gradEnd   = Color(0xFF06B6D4);
-
-  static const Color userBubble        = Color(0xFF1E3A5F);
-  static const Color aiBubble          = Color(0xFF111827);
-  static const Color aiBubbleBorder    = Color(0xFF1E293B);
-  static const Color glassBorder       = Color(0x22FFFFFF);
-
-  static const Color textPrimary   = Color(0xFFF8FAFC);
-  static const Color textSecondary = Color(0xFF94A3B8);
-  static const Color textMuted     = Color(0xFF475569);
-
-  static const Color success = Color(0xFF10B981);
-  static const Color error   = Color(0xFFEF4444);
-  static const Color warning = Color(0xFFF59E0B);
-
-  static const Color drawerBg      = Color(0xFF0C0C18);
-  static const Color drawerSurface = Color(0xFF141428);
-  static const Color divider       = Color(0xFF1E293B);
-}
-
-// ─── Light Color Palette ──────────────────────────────────────────────────────
-class LightColors {
-  static const Color bgDeep    = Color(0xFFE8EFF8);
-  static const Color bgBase    = Color(0xFFF0F4FC);
-  static const Color bgSurface = Color(0xFFFFFFFF);
-  static const Color bgCard    = Color(0xFFF8FAFF);
-  static const Color bgInputBar= Color(0xFFFFFFFF);
-  static const Color bgGlass   = Color(0x1A4A90D9);
-
-  static const Color accentPrimary   = Color(0xFF2563EB); // Google blue
-  static const Color accentSecondary = Color(0xFF7C3AED); // Purple
-  static const Color accentTertiary  = Color(0xFF0891B2); // Cyan
-  static const Color accentGold      = Color(0xFFD97706); // Amber
-
-  static const Color gradStart = Color(0xFF2563EB);
-  static const Color gradMid   = Color(0xFF7C3AED);
-  static const Color gradEnd   = Color(0xFF0891B2);
-
-  static const Color userBubble     = Color(0xFF2563EB);
-  static const Color aiBubble       = Color(0xFFFFFFFF);
-  static const Color aiBubbleBorder = Color(0xFFE2E8F0);
-  static const Color glassBorder    = Color(0x222563EB);
-
-  static const Color textPrimary   = Color(0xFF0F172A);
-  static const Color textSecondary = Color(0xFF475569);
-  static const Color textMuted     = Color(0xFFCBD5E1);
-
-  static const Color success = Color(0xFF059669);
-  static const Color error   = Color(0xFFDC2626);
-  static const Color warning = Color(0xFFD97706);
-
-  static const Color drawerBg      = Color(0xFFEEF2FF);
-  static const Color drawerSurface = Color(0xFFFFFFFF);
-  static const Color divider       = Color(0xFFE2E8F0);
-}
-
-// ─── Unified interface ────────────────────────────────────────────────────────
+/// Warm, quiet palette shared by the three premium mobile surfaces.
 class AppColors {
-  static bool _dark = true;
-  static void init(bool isDark) => _dark = isDark;
+  static const bgBase = Color(0xFFF5F1E8);
+  static const bgDeep = Color(0xFFECE5D8);
+  static const bgSurface = Color(0xFFFFFFFF);
+  static const bgCard = Color(0xFFFFFDF9);
+  static const bgInputBar = Color(0xFFFFFFFF);
+  static const bgGlass = Color(0xD9FFFFFF);
+  static const accentPrimary = Color(0xFF22211F);
+  static const accentSecondary = Color(0xFF9C7B5B);
+  static const accentTertiary = Color(0xFF55756B);
+  static const accentGold = Color(0xFFD5A85D);
+  static const gradStart = Color(0xFFC79B72);
+  static const gradMid = Color(0xFFA88668);
+  static const gradEnd = Color(0xFF6F5A49);
+  static const userBubble = Color(0xFF242321);
+  static const aiBubble = Color(0xFFFFFFFF);
+  static const aiBubbleBorder = Color(0xFFEAE3D8);
+  static const glassBorder = Color(0x80FFFFFF);
+  static const textPrimary = Color(0xFF201F1D);
+  static const textSecondary = Color(0xFF6F6A62);
+  static const textMuted = Color(0xFFA49E94);
+  static const success = Color(0xFF55756B);
+  static const error = Color(0xFFB85C4C);
+  static const warning = Color(0xFFD5A85D);
+  static const drawerBg = bgBase;
+  static const drawerSurface = bgSurface;
+  static const divider = Color(0xFFE7E0D5);
 
-  static Color get bgDeep      => _dark ? DarkColors.bgDeep      : LightColors.bgDeep;
-  static Color get bgBase      => _dark ? DarkColors.bgBase      : LightColors.bgBase;
-  static Color get bgSurface   => _dark ? DarkColors.bgSurface   : LightColors.bgSurface;
-  static Color get bgCard      => _dark ? DarkColors.bgCard      : LightColors.bgCard;
-  static Color get bgInputBar  => _dark ? DarkColors.bgInputBar  : LightColors.bgInputBar;
-  static Color get bgGlass     => _dark ? DarkColors.bgGlass     : LightColors.bgGlass;
-
-  static Color get accentPrimary   => _dark ? DarkColors.accentPrimary   : LightColors.accentPrimary;
-  static Color get accentSecondary => _dark ? DarkColors.accentSecondary : LightColors.accentSecondary;
-  static Color get accentTertiary  => _dark ? DarkColors.accentTertiary  : LightColors.accentTertiary;
-  static Color get accentGold      => _dark ? DarkColors.accentGold      : LightColors.accentGold;
-
-  static Color get gradStart => _dark ? DarkColors.gradStart : LightColors.gradStart;
-  static Color get gradMid   => _dark ? DarkColors.gradMid   : LightColors.gradMid;
-  static Color get gradEnd   => _dark ? DarkColors.gradEnd   : LightColors.gradEnd;
-
-  static Color get aiBubble       => _dark ? DarkColors.aiBubble       : LightColors.aiBubble;
-  static Color get aiBubbleBorder => _dark ? DarkColors.aiBubbleBorder : LightColors.aiBubbleBorder;
-  static Color get glassBorder    => _dark ? DarkColors.glassBorder    : LightColors.glassBorder;
-
-  static Color get textPrimary   => _dark ? DarkColors.textPrimary   : LightColors.textPrimary;
-  static Color get textSecondary => _dark ? DarkColors.textSecondary : LightColors.textSecondary;
-  static Color get textMuted     => _dark ? DarkColors.textMuted     : LightColors.textMuted;
-
-  static Color get success => _dark ? DarkColors.success : LightColors.success;
-  static Color get error   => _dark ? DarkColors.error   : LightColors.error;
-  static Color get warning => _dark ? DarkColors.warning : LightColors.warning;
-
-  static Color get drawerBg      => _dark ? DarkColors.drawerBg      : LightColors.drawerBg;
-  static Color get drawerSurface => _dark ? DarkColors.drawerSurface : LightColors.drawerSurface;
-  static Color get divider       => _dark ? DarkColors.divider       : LightColors.divider;
-
-  // Gradient helpers
-  static List<Color> get primaryGradient => [gradStart, gradMid, gradEnd];
-  static List<Color> get subtleGradient  => [gradStart.withValues(alpha: 0.8), gradEnd.withValues(alpha: 0.8)];
+  static void init(bool _) {}
+  static List<Color> get primaryGradient => const [gradStart, gradEnd];
+  static List<Color> get subtleGradient =>
+      const [Color(0xFFD9BEA5), Color(0xFF9C7B5B)];
 }
 
-// ─── Theme Data ───────────────────────────────────────────────────────────────
 class AppTheme {
-  static ThemeData get dark {
-    return ThemeData.dark().copyWith(
-      scaffoldBackgroundColor: DarkColors.bgBase,
-      colorScheme: const ColorScheme.dark(
-        primary: DarkColors.accentPrimary,
-        secondary: DarkColors.accentSecondary,
-        tertiary: DarkColors.accentTertiary,
-        surface: DarkColors.bgSurface,
-        error: DarkColors.error,
-      ),
-      textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme),
-      drawerTheme: const DrawerThemeData(
-        backgroundColor: DarkColors.drawerBg,
-      ),
-      dividerColor: DarkColors.divider,
-      cardColor: DarkColors.bgCard,
+  static ThemeData get light {
+    final scheme = ColorScheme.fromSeed(
+      seedColor: AppColors.accentSecondary,
+      brightness: Brightness.light,
+      surface: AppColors.bgSurface,
+    );
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.light,
+      scaffoldBackgroundColor: AppColors.bgBase,
+      colorScheme: scheme,
+      fontFamily: 'SF Pro Display',
+      splashFactory: InkSparkle.splashFactory,
+      textTheme: const TextTheme(
+        displayLarge: TextStyle(
+            fontSize: 52,
+            height: .98,
+            fontWeight: FontWeight.w700,
+            letterSpacing: -2.2),
+        headlineLarge: TextStyle(
+            fontSize: 40,
+            height: 1.02,
+            fontWeight: FontWeight.w700,
+            letterSpacing: -1.7),
+        headlineMedium: TextStyle(
+            fontSize: 28,
+            height: 1.08,
+            fontWeight: FontWeight.w700,
+            letterSpacing: -1),
+        titleLarge: TextStyle(
+            fontSize: 20, fontWeight: FontWeight.w700, letterSpacing: -.35),
+        bodyLarge:
+            TextStyle(fontSize: 16, height: 1.45, fontWeight: FontWeight.w500),
+        bodyMedium:
+            TextStyle(fontSize: 14, height: 1.4, fontWeight: FontWeight.w500),
+        labelLarge: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+      ).apply(
+          bodyColor: AppColors.textPrimary,
+          displayColor: AppColors.textPrimary),
+      cardColor: AppColors.bgSurface,
+      dividerColor: AppColors.divider,
+      inputDecorationTheme:
+          const InputDecorationTheme(border: InputBorder.none),
+      pageTransitionsTheme: const PageTransitionsTheme(builders: {
+        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+      }),
     );
   }
 
-  static ThemeData get light {
-    return ThemeData.light().copyWith(
-      scaffoldBackgroundColor: LightColors.bgBase,
-      colorScheme: const ColorScheme.light(
-        primary: LightColors.accentPrimary,
-        secondary: LightColors.accentSecondary,
-        tertiary: LightColors.accentTertiary,
-        surface: LightColors.bgSurface,
-        error: LightColors.error,
-      ),
-      textTheme: GoogleFonts.interTextTheme(ThemeData.light().textTheme),
-      drawerTheme: const DrawerThemeData(
-        backgroundColor: LightColors.drawerBg,
-      ),
-      dividerColor: LightColors.divider,
-      cardColor: LightColors.bgCard,
-    );
-  }
+  // Kept for API compatibility; the product intentionally ships in light mode.
+  static ThemeData get dark => light;
+}
+
+class AppShadows {
+  static List<BoxShadow> get card => const [
+        BoxShadow(
+            color: Color(0x140D0B08), blurRadius: 28, offset: Offset(0, 12)),
+        BoxShadow(
+            color: Color(0xA6FFFFFF), blurRadius: 1, offset: Offset(0, -1)),
+      ];
+
+  static List<BoxShadow> get floating => const [
+        BoxShadow(
+            color: Color(0x260D0B08), blurRadius: 34, offset: Offset(0, 16)),
+      ];
 }

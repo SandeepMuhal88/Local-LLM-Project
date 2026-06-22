@@ -57,7 +57,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     final provider = context.watch<AppProvider>();
     AppColors.init(provider.isDarkMode);
-    final avatarColors = _avatarGradients[provider.avatarIndex % _avatarGradients.length];
+    final avatarColors =
+        _avatarGradients[provider.avatarIndex % _avatarGradients.length];
 
     return Scaffold(
       backgroundColor: AppColors.bgBase,
@@ -66,7 +67,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         elevation: 0,
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
-          icon: Icon(Icons.arrow_back_ios_rounded, color: AppColors.textPrimary, size: 20),
+          icon: const Icon(Icons.arrow_back_ios_rounded,
+              color: AppColors.textPrimary, size: 20),
         ),
         title: Text(
           'My Profile',
@@ -189,7 +191,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     width: 2.5,
                   ),
                   boxShadow: selected
-                      ? [BoxShadow(color: grad[0].withValues(alpha: 0.5), blurRadius: 8)]
+                      ? [
+                          BoxShadow(
+                              color: grad[0].withValues(alpha: 0.5),
+                              blurRadius: 8)
+                        ]
                       : [],
                 ),
               ),
@@ -213,7 +219,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           Row(
             children: [
-              Icon(Icons.badge_outlined, size: 16, color: AppColors.accentPrimary),
+              const Icon(Icons.badge_outlined,
+                  size: 16, color: AppColors.accentPrimary),
               const SizedBox(width: 8),
               Text(
                 'Display Name',
@@ -229,7 +236,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 GestureDetector(
                   onTap: () => setState(() => _editing = true),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     decoration: BoxDecoration(
                       color: AppColors.accentPrimary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
@@ -237,7 +245,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.edit_rounded,
+                        const Icon(Icons.edit_rounded,
                             size: 13, color: AppColors.accentPrimary),
                         const SizedBox(width: 4),
                         Text(
@@ -273,12 +281,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: AppColors.accentPrimary),
+                  borderSide: const BorderSide(color: AppColors.accentPrimary),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide:
-                      BorderSide(color: AppColors.accentPrimary, width: 2),
+                  borderSide: const BorderSide(
+                      color: AppColors.accentPrimary, width: 2),
                 ),
                 filled: true,
                 fillColor: AppColors.bgCard,
@@ -322,8 +330,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [AppColors.gradStart, AppColors.accentSecondary],
+                        gradient: const LinearGradient(
+                          colors: [
+                            AppColors.gradStart,
+                            AppColors.accentSecondary
+                          ],
                         ),
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -357,8 +368,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 if (_saved) ...[
                   const SizedBox(width: 10),
-                  Icon(Icons.check_circle_rounded,
-                      color: AppColors.success, size: 18)
+                  const Icon(Icons.check_circle_rounded,
+                          color: AppColors.success, size: 18)
                       .animate()
                       .scale(curve: Curves.elasticOut),
                 ],
@@ -407,7 +418,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 label: 'Messages',
               ),
               const SizedBox(width: 12),
-              _StatItem(
+              const _StatItem(
                 icon: Icons.offline_bolt_rounded,
                 value: '100%',
                 label: 'Offline',
@@ -424,7 +435,8 @@ class _StatItem extends StatelessWidget {
   final IconData icon;
   final String value;
   final String label;
-  const _StatItem({required this.icon, required this.value, required this.label});
+  const _StatItem(
+      {required this.icon, required this.value, required this.label});
 
   @override
   Widget build(BuildContext context) {

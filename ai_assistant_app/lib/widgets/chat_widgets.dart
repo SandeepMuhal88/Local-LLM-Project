@@ -16,7 +16,7 @@ class EnhancedTypingIndicator extends StatelessWidget {
       child: Row(
         children: [
           // Avatar
-          _AIAvatar(size: 30),
+          const _AIAvatar(size: 30),
           const SizedBox(width: 12),
 
           // Bubble
@@ -30,7 +30,8 @@ class EnhancedTypingIndicator extends StatelessWidget {
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
                 decoration: BoxDecoration(
                   color: AppColors.aiBubble.withValues(alpha: 0.9),
                   borderRadius: const BorderRadius.only(
@@ -48,7 +49,7 @@ class EnhancedTypingIndicator extends StatelessWidget {
                       margin: const EdgeInsets.symmetric(horizontal: 3),
                       width: 8,
                       height: 8,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         gradient: LinearGradient(
                           colors: [AppColors.gradStart, AppColors.gradEnd],
                         ),
@@ -56,10 +57,16 @@ class EnhancedTypingIndicator extends StatelessWidget {
                       ),
                     )
                         .animate(onPlay: (c) => c.repeat())
-                        .fadeIn(delay: Duration(milliseconds: i * 200), duration: 300.ms)
+                        .fadeIn(
+                            delay: Duration(milliseconds: i * 200),
+                            duration: 300.ms)
                         .then()
                         .fadeOut(duration: 300.ms)
-                        .moveY(begin: 0, end: -5, delay: Duration(milliseconds: i * 200), duration: 300.ms)
+                        .moveY(
+                            begin: 0,
+                            end: -5,
+                            delay: Duration(milliseconds: i * 200),
+                            duration: 300.ms)
                         .then()
                         .moveY(begin: -5, end: 0, duration: 300.ms);
                   }),
@@ -72,7 +79,9 @@ class EnhancedTypingIndicator extends StatelessWidget {
           Text(
             'Thinking...',
             style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMuted),
-          ).animate(onPlay: (c) => c.repeat(reverse: true)).fade(begin: 0.4, end: 1.0, duration: 1.seconds),
+          )
+              .animate(onPlay: (c) => c.repeat(reverse: true))
+              .fade(begin: 0.4, end: 1.0, duration: 1.seconds),
         ],
       ),
     );
@@ -91,7 +100,7 @@ class _AIAvatar extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        gradient: LinearGradient(
+        gradient: const LinearGradient(
           colors: [AppColors.gradStart, AppColors.gradMid, AppColors.gradEnd],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -226,9 +235,10 @@ class _MessageBubbleState extends State<MessageBubble> {
             child: ConstrainedBox(
               constraints: BoxConstraints(maxWidth: maxBubbleWidth),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 13),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 18, vertical: 13),
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
+                  gradient: const LinearGradient(
                     colors: [AppColors.gradStart, AppColors.accentSecondary],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -259,7 +269,7 @@ class _MessageBubbleState extends State<MessageBubble> {
             ),
           ),
           const SizedBox(width: 10),
-          _UserAvatar(size: 30),
+          const _UserAvatar(size: 30),
         ],
       ),
     )
@@ -274,9 +284,8 @@ class _MessageBubbleState extends State<MessageBubble> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _AIAvatar(size: 30),
+          const _AIAvatar(size: 30),
           const SizedBox(width: 12),
-
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -287,7 +296,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                   child: Row(
                     children: [
                       ShaderMask(
-                        shaderCallback: (b) => LinearGradient(
+                        shaderCallback: (b) => const LinearGradient(
                           colors: [AppColors.gradStart, AppColors.gradEnd],
                         ).createShader(b),
                         child: Text(
@@ -301,12 +310,15 @@ class _MessageBubbleState extends State<MessageBubble> {
                       ),
                       const SizedBox(width: 6),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
-                          color: AppColors.accentPrimary.withValues(alpha: 0.12),
+                          color:
+                              AppColors.accentPrimary.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(6),
                           border: Border.all(
-                            color: AppColors.accentPrimary.withValues(alpha: 0.25),
+                            color:
+                                AppColors.accentPrimary.withValues(alpha: 0.25),
                           ),
                         ),
                         child: Text(
@@ -356,7 +368,8 @@ class _MessageBubbleState extends State<MessageBubble> {
                   ),
 
                 const SizedBox(height: 4),
-                Divider(color: AppColors.glassBorder, height: 1, thickness: 0.6),
+                const Divider(
+                    color: AppColors.glassBorder, height: 1, thickness: 0.6),
               ],
             ),
           ),
@@ -396,7 +409,8 @@ class _RichMessageContent extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: parts.map((part) {
         if (part['type'] == 'code') {
-          return _CodeBlock(code: part['content']!, language: part['lang'] ?? '');
+          return _CodeBlock(
+              code: part['content']!, language: part['lang'] ?? '');
         }
         return SelectableText(
           part['content']!,
@@ -417,7 +431,8 @@ class _RichMessageContent extends StatelessWidget {
 
     for (final match in regex.allMatches(text)) {
       if (match.start > lastEnd) {
-        parts.add({'type': 'text', 'content': text.substring(lastEnd, match.start)});
+        parts.add(
+            {'type': 'text', 'content': text.substring(lastEnd, match.start)});
       }
       parts.add({
         'type': 'code',
@@ -477,14 +492,18 @@ class _CodeBlockState extends State<_CodeBlock> {
                 topLeft: Radius.circular(14),
                 topRight: Radius.circular(14),
               ),
-              border: Border(bottom: BorderSide(color: AppColors.glassBorder)),
+              border: const Border(
+                  bottom: BorderSide(color: AppColors.glassBorder)),
             ),
             child: Row(
               children: [
-                Icon(Icons.code_rounded, size: 14, color: AppColors.accentTertiary),
+                const Icon(Icons.code_rounded,
+                    size: 14, color: AppColors.accentTertiary),
                 const SizedBox(width: 6),
                 Text(
-                  widget.language.isEmpty ? 'Code' : widget.language.toUpperCase(),
+                  widget.language.isEmpty
+                      ? 'Code'
+                      : widget.language.toUpperCase(),
                   style: GoogleFonts.inter(
                     fontSize: 11,
                     fontWeight: FontWeight.w700,
@@ -496,7 +515,8 @@ class _CodeBlockState extends State<_CodeBlock> {
                 GestureDetector(
                   onTap: _copy,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
                       color: AppColors.bgSurface,
                       borderRadius: BorderRadius.circular(8),
@@ -508,14 +528,17 @@ class _CodeBlockState extends State<_CodeBlock> {
                         Icon(
                           _copied ? Icons.check_rounded : Icons.copy_rounded,
                           size: 12,
-                          color: _copied ? AppColors.success : AppColors.textMuted,
+                          color:
+                              _copied ? AppColors.success : AppColors.textMuted,
                         ),
                         const SizedBox(width: 4),
                         Text(
                           _copied ? 'Copied!' : 'Copy',
                           style: GoogleFonts.inter(
                             fontSize: 11,
-                            color: _copied ? AppColors.success : AppColors.textMuted,
+                            color: _copied
+                                ? AppColors.success
+                                : AppColors.textMuted,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -589,7 +612,9 @@ class _AIActionBar extends StatelessWidget {
         ),
         const SizedBox(width: 2),
         _MiniActionBtn(
-          icon: disliked ? Icons.thumb_down_rounded : Icons.thumb_down_alt_outlined,
+          icon: disliked
+              ? Icons.thumb_down_rounded
+              : Icons.thumb_down_alt_outlined,
           tooltip: 'Bad response',
           onTap: onDislike,
           small: true,
@@ -670,7 +695,8 @@ class _MiniActionBtnState extends State<_MiniActionBtn> {
               child: Icon(
                 widget.icon,
                 size: iconSize,
-                color: widget.isSuccess ? AppColors.success : AppColors.textMuted,
+                color:
+                    widget.isSuccess ? AppColors.success : AppColors.textMuted,
               ),
             ),
           ),
@@ -727,7 +753,7 @@ class _EmptyChatPlaceholderState extends State<EmptyChatPlaceholder>
     {
       'label': 'Create',
       'icon': Icons.draw_rounded,
-      'color': Color(0xFF8B5CF6),
+      'color': const Color(0xFF8B5CF6),
       'suggestions': [
         'Write a poem about the ocean',
         'Create a short story idea',
@@ -738,7 +764,7 @@ class _EmptyChatPlaceholderState extends State<EmptyChatPlaceholder>
     {
       'label': 'Explore',
       'icon': Icons.explore_rounded,
-      'color': Color(0xFF4A90D9),
+      'color': const Color(0xFF4A90D9),
       'suggestions': [
         'Explain quantum computing',
         'What is machine learning?',
@@ -749,7 +775,7 @@ class _EmptyChatPlaceholderState extends State<EmptyChatPlaceholder>
     {
       'label': 'Code',
       'icon': Icons.code_rounded,
-      'color': Color(0xFF10B981),
+      'color': const Color(0xFF10B981),
       'suggestions': [
         'Write a Python web scraper',
         'Explain async/await in Dart',
@@ -760,7 +786,7 @@ class _EmptyChatPlaceholderState extends State<EmptyChatPlaceholder>
     {
       'label': 'Analyze',
       'icon': Icons.analytics_rounded,
-      'color': Color(0xFFF59E0B),
+      'color': const Color(0xFFF59E0B),
       'suggestions': [
         'Summarize a document',
         'Compare two approaches',
@@ -802,8 +828,12 @@ class _EmptyChatPlaceholderState extends State<EmptyChatPlaceholder>
 
           // ── Main headline ────────────────────────────────────────────────
           ShaderMask(
-            shaderCallback: (b) => LinearGradient(
-              colors: [AppColors.gradStart, AppColors.gradMid, AppColors.gradEnd],
+            shaderCallback: (b) => const LinearGradient(
+              colors: [
+                AppColors.gradStart,
+                AppColors.gradMid,
+                AppColors.gradEnd
+              ],
             ).createShader(b),
             child: Text(
               'How can I help you today?',
@@ -845,7 +875,8 @@ class _EmptyChatPlaceholderState extends State<EmptyChatPlaceholder>
 
           // ── Suggestion Grid ──────────────────────────────────────────────
           _SuggestionGrid(
-            suggestions: (_categories[_selectedCategory]['suggestions'] as List<String>),
+            suggestions:
+                (_categories[_selectedCategory]['suggestions'] as List<String>),
             color: _categories[_selectedCategory]['color'] as Color,
             icon: _categories[_selectedCategory]['icon'] as IconData,
             onTap: widget.onSuggestionTap,
@@ -903,7 +934,7 @@ class _HeroLogo extends StatelessWidget {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   gradient: SweepGradient(
-                    colors: [
+                    colors: const [
                       AppColors.gradStart,
                       AppColors.gradMid,
                       AppColors.gradEnd,
@@ -920,15 +951,14 @@ class _HeroLogo extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: const Icon(Icons.auto_awesome, color: Colors.white, size: 40),
+                child: const Icon(Icons.auto_awesome,
+                    color: Colors.white, size: 40),
               ),
             ],
           );
         },
       ),
-    )
-        .animate(onPlay: (c) => c.repeat(reverse: true))
-        .scale(
+    ).animate(onPlay: (c) => c.repeat(reverse: true)).scale(
           begin: const Offset(0.95, 0.95),
           end: const Offset(1.05, 1.05),
           duration: 2.seconds,
@@ -996,17 +1026,21 @@ class _CategoryTabs extends StatelessWidget {
             margin: const EdgeInsets.symmetric(horizontal: 4),
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
             decoration: BoxDecoration(
-              color: isSelected ? color.withValues(alpha: 0.15) : AppColors.bgCard,
+              color:
+                  isSelected ? color.withValues(alpha: 0.15) : AppColors.bgCard,
               borderRadius: BorderRadius.circular(40),
               border: Border.all(
-                color: isSelected ? color.withValues(alpha: 0.5) : AppColors.glassBorder,
+                color: isSelected
+                    ? color.withValues(alpha: 0.5)
+                    : AppColors.glassBorder,
                 width: isSelected ? 1.5 : 1,
               ),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(cat['icon'] as IconData, size: 14, color: isSelected ? color : AppColors.textMuted),
+                Icon(cat['icon'] as IconData,
+                    size: 14, color: isSelected ? color : AppColors.textMuted),
                 const SizedBox(width: 6),
                 Text(
                   cat['label'] as String,
@@ -1137,7 +1171,9 @@ class _SuggestionCardState extends State<_SuggestionCard> {
                 widget.text,
                 style: GoogleFonts.inter(
                   fontSize: 13,
-                  color: _hovered ? AppColors.textPrimary : AppColors.textSecondary,
+                  color: _hovered
+                      ? AppColors.textPrimary
+                      : AppColors.textSecondary,
                   height: 1.4,
                   fontWeight: _hovered ? FontWeight.w500 : FontWeight.w400,
                 ),
@@ -1163,7 +1199,8 @@ class _SuggestionCardState extends State<_SuggestionCard> {
       ),
     )
         .animate()
-        .fadeIn(delay: Duration(milliseconds: widget.delay + 400), duration: 400.ms)
+        .fadeIn(
+            delay: Duration(milliseconds: widget.delay + 400), duration: 400.ms)
         .slideY(begin: 0.15, end: 0, duration: 400.ms, curve: Curves.easeOut);
   }
 }
@@ -1171,9 +1208,21 @@ class _SuggestionCardState extends State<_SuggestionCard> {
 // ─── Feature Pills ────────────────────────────────────────────────────────────
 class _FeaturePills extends StatelessWidget {
   final List<Map<String, dynamic>> _features = const [
-    {'icon': Icons.lock_outline_rounded, 'label': '100% Private', 'color': Color(0xFF10B981)},
-    {'icon': Icons.offline_bolt_rounded, 'label': 'Works Offline', 'color': Color(0xFF4A90D9)},
-    {'icon': Icons.speed_rounded, 'label': 'Fast Responses', 'color': Color(0xFF8B5CF6)},
+    {
+      'icon': Icons.lock_outline_rounded,
+      'label': '100% Private',
+      'color': Color(0xFF10B981)
+    },
+    {
+      'icon': Icons.offline_bolt_rounded,
+      'label': 'Works Offline',
+      'color': Color(0xFF4A90D9)
+    },
+    {
+      'icon': Icons.speed_rounded,
+      'label': 'Fast Responses',
+      'color': Color(0xFF8B5CF6)
+    },
   ];
 
   @override
@@ -1208,7 +1257,9 @@ class _FeaturePills extends StatelessWidget {
           ),
         )
             .animate()
-            .fadeIn(delay: Duration(milliseconds: e.key * 100 + 700), duration: 400.ms)
+            .fadeIn(
+                delay: Duration(milliseconds: e.key * 100 + 700),
+                duration: 400.ms)
             .slideY(begin: 0.2, end: 0);
       }).toList(),
     );
@@ -1244,7 +1295,7 @@ class _SendButtonState extends State<SendButton> {
         height: 44,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          gradient: LinearGradient(
+          gradient: const LinearGradient(
             colors: [AppColors.gradStart, AppColors.gradEnd],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -1269,7 +1320,8 @@ class _SendButtonState extends State<SendButton> {
                     valueColor: AlwaysStoppedAnimation(Colors.white),
                   ),
                 )
-              : const Icon(Icons.arrow_upward_rounded, color: Colors.white, size: 20),
+              : const Icon(Icons.arrow_upward_rounded,
+                  color: Colors.white, size: 20),
         ),
       ).animate(target: _pressed ? 1 : 0).scale(
             begin: const Offset(1, 1),

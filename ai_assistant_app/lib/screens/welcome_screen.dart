@@ -1,11 +1,11 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:confetti/confetti.dart';
 import 'package:provider/provider.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../app_provider.dart';
-import '../theme/app_theme.dart';
 import '../services/storage_service.dart';
+import '../theme/app_theme.dart';
 import 'home_shell.dart';
 
 class WelcomeScreen extends StatefulWidget {
@@ -16,554 +16,284 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen>
-    with TickerProviderStateMixin {
-  final TextEditingController _nameCtrl = TextEditingController();
-  final FocusNode _focusNode = FocusNode();
-  late ConfettiController _confetti;
-  late AnimationController _bgAnim;
-
-  bool _showCelebration = false;
-  bool _isLoading = false;
-  String _greeting = '';
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _mascotController;
+  bool _leaving = false;
 
   @override
   void initState() {
     super.initState();
-    _confetti = ConfettiController(duration: const Duration(seconds: 4));
-    _bgAnim = AnimationController(
+    _mascotController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 10),
-    )..repeat(reverse: true);
-    _greeting = _getGreeting();
+      duration: const Duration(milliseconds: 900),
+    );
   }
 
   @override
   void dispose() {
-    _confetti.dispose();
-    _bgAnim.dispose();
-    _nameCtrl.dispose();
-    _focusNode.dispose();
+    _mascotController.dispose();
     super.dispose();
   }
 
-  String _getGreeting() {
-    final hour = DateTime.now().hour;
-    if (hour < 12) return '🌅 Good Morning';
-    if (hour < 17) return '☀️ Good Afternoon';
-    if (hour < 20) return '🌆 Good Evening';
-    return '🌙 Good Night';
+  Future<void> _finish() async {
+    if (_leaving) return;
+    setState(() => _leaving = true);
+    HapticFeedback.mediumImpact();
+    final provider = context.read<AppProvider>();
+    if (provider.userName.isEmpty) await provider.setUserName('Friend');
+    if (provider.currentSession == null) await provider.createNewSession();
+    await StorageService.setNotFirstLaunch();
+    if (!mounted) return;
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (_) => const HomeShell()),
+    );
   }
 
-  Future<void> _onContinue() async {
-    final name = _nameCtrl.text.trim();
-    if (name.isEmpty) {
-      _focusNode.requestFocus();
-      return;
-    }
+  void _refreshMascot() {
+    HapticFeedback.selectionClick();
+    _mascotController.forward(from: 0);
+  }
 
-    setState(() => _isLoading = true);
-    _focusNode.unfocus();
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) => SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: IntrinsicHeight(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 16, 24, 20),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const _BrandPill(),
+                          _RoundIcon(
+                            icon: Icons.more_horiz_rounded,
+                            label: 'More options',
+                            onTap: () {},
+                            size: 44,
+                          ),
+                        ],
+                      ).animate().fadeIn(duration: 450.ms),
+                      const Spacer(),
+                      AnimatedBuilder(
+                        animation: _mascotController,
+                        builder: (context, child) => Transform.rotate(
+                          angle:
+                              math.sin(_mascotController.value * math.pi * 2) *
+                                  .045,
+                          child: Transform.scale(
+                            scale: 1 +
+                                math.sin(_mascotController.value * math.pi) *
+                                    .04,
+                            child: child,
+                          ),
+                        ),
+                        child: Container(
+                          width: 278,
+                          height: 278,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF0E9DD),
+                            borderRadius: BorderRadius.circular(64),
+                            boxShadow: AppShadows.card,
+                          ),
+                          clipBehavior: Clip.antiAlias,
+                          child: Image.asset(
+                            'assets/images/ai_mascot.png',
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) =>
+                                const _MascotFallback(),
+                          ),
+                        ),
+                      ).animate().fadeIn(delay: 120.ms, duration: 600.ms).scale(
+                            begin: const Offset(.9, .9),
+                            curve: Curves.easeOutBack,
+                          ),
+                      const SizedBox(height: 40),
+                      Text(
+                        'Your Smart AI\nAssistant Here',
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.headlineLarge,
+                      ).animate().fadeIn(delay: 220.ms).slideY(begin: .08),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'Create, explore, and get things done\nwith a private intelligence by your side.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: AppColors.textSecondary,
+                          fontSize: 15,
+                          height: 1.45,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ).animate().fadeIn(delay: 320.ms),
+                      const Spacer(),
+                      Container(
+                        padding: const EdgeInsets.fromLTRB(20, 14, 20, 12),
+                        decoration: BoxDecoration(
+                          color: AppColors.bgSurface,
+                          borderRadius: BorderRadius.circular(32),
+                          boxShadow: AppShadows.floating,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _Control(
+                              icon: Icons.close_rounded,
+                              label: 'Close',
+                              onTap: _finish,
+                            ),
+                            _Control(
+                              icon: _leaving
+                                  ? Icons.more_horiz_rounded
+                                  : Icons.mic_rounded,
+                              label: _leaving ? 'Opening' : 'Voice',
+                              onTap: _finish,
+                              primary: true,
+                            ),
+                            _Control(
+                              icon: Icons.refresh_rounded,
+                              label: 'Refresh',
+                              onTap: _refreshMascot,
+                            ),
+                          ],
+                        ),
+                      ).animate().fadeIn(delay: 420.ms).slideY(begin: .18),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
 
-    final provider = context.read<AppProvider>();
-    await provider.setUserName(name);
-    await StorageService.setNotFirstLaunch();
-    await provider.createNewSession();
+class _BrandPill extends StatelessWidget {
+  const _BrandPill();
 
-    setState(() {
-      _showCelebration = true;
-      _isLoading = false;
-    });
-    _confetti.play();
+  @override
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+        decoration: BoxDecoration(
+          color: const Color(0x4DFFFFFF),
+          borderRadius: BorderRadius.circular(999),
+          border: Border.all(color: const Color(0xB3FFFFFF)),
+        ),
+        child: const Row(children: [
+          Icon(Icons.auto_awesome_rounded, size: 15),
+          SizedBox(width: 7),
+          Text('RAMA  /  PERSONAL AI',
+              style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 1.1)),
+        ]),
+      );
+}
 
-    await Future.delayed(const Duration(milliseconds: 3200));
+class _RoundIcon extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+  final double size;
+  const _RoundIcon(
+      {required this.icon,
+      required this.label,
+      required this.onTap,
+      this.size = 52});
 
-    if (mounted) {
-      Navigator.of(context).pushReplacement(
-        PageRouteBuilder(
-          pageBuilder: (_, anim, __) => const HomeShell(),
-          transitionsBuilder: (_, anim, __, child) {
-            return FadeTransition(
-              opacity: CurvedAnimation(parent: anim, curve: Curves.easeInOut),
-              child: child,
-            );
-          },
-          transitionDuration: const Duration(milliseconds: 600),
+  @override
+  Widget build(BuildContext context) => Semantics(
+        button: true,
+        label: label,
+        child: Material(
+          color: AppColors.bgSurface,
+          shape: const CircleBorder(),
+          child: InkWell(
+            onTap: onTap,
+            customBorder: const CircleBorder(),
+            child: SizedBox(
+                width: size, height: size, child: Icon(icon, size: size * .42)),
+          ),
         ),
       );
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = context.watch<AppProvider>().isDarkMode;
-    AppColors.init(isDark);
-    final size = MediaQuery.of(context).size;
-
-    return Scaffold(
-      backgroundColor: AppColors.bgBase,
-      body: Stack(
-        children: [
-          // Animated background
-          _AnimatedBg(controller: _bgAnim, isDark: isDark),
-
-          // Confetti
-          Align(
-            alignment: Alignment.topCenter,
-            child: ConfettiWidget(
-              confettiController: _confetti,
-              blastDirectionality: BlastDirectionality.explosive,
-              numberOfParticles: 60,
-              maxBlastForce: 40,
-              minBlastForce: 8,
-              gravity: 0.15,
-              colors: const [
-                Color(0xFF7C6FFF),
-                Color(0xFF00D9FF),
-                Color(0xFF9D4EDD),
-                Color(0xFFFFB830),
-                Color(0xFFFF5670),
-                Color(0xFF10D9A0),
-              ],
-              shouldLoop: false,
-            ),
-          ),
-
-          // Content
-          SafeArea(
-            child: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(
-                horizontal: size.width < 600 ? 28 : size.width * 0.25,
-                vertical: 20,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const SizedBox(height: 40),
-
-                  // ── Logo ─────────────────────────────────────────────────
-                  Center(
-                    child: _buildLogo(),
-                  ),
-
-                  const SizedBox(height: 32),
-
-                  // ── App name ─────────────────────────────────────────────
-                  Center(
-                    child: ShaderMask(
-                      shaderCallback: (b) => LinearGradient(
-                        colors: [AppColors.gradStart, AppColors.accentSecondary],
-                      ).createShader(b),
-                      child: Text(
-                        'Rama AI',
-                        style: GoogleFonts.inter(
-                          fontSize: 42,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.white,
-                          letterSpacing: -1,
-                        ),
-                      ),
-                    ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.1),
-                  ),
-
-                  const SizedBox(height: 8),
-
-                  Center(
-                    child: Text(
-                      'Your intelligent offline companion',
-                      style: GoogleFonts.inter(
-                        fontSize: 14,
-                        color: AppColors.textSecondary,
-                      ),
-                    ).animate().fadeIn(delay: 200.ms, duration: 600.ms),
-                  ),
-
-                  const SizedBox(height: 48),
-
-                  // ── Welcome card ─────────────────────────────────────────
-                  _WelcomeCard(
-                    greeting: _greeting,
-                    isDark: isDark,
-                    nameCtrl: _nameCtrl,
-                    focusNode: _focusNode,
-                    onContinue: _onContinue,
-                    isLoading: _isLoading,
-                    showCelebration: _showCelebration,
-                  ).animate().fadeIn(delay: 400.ms, duration: 700.ms)
-                      .slideY(begin: 0.15, end: 0),
-
-                  const SizedBox(height: 60),
-
-                  // ── Feature pills ─────────────────────────────────────────
-                  _FeaturePills(isDark: isDark)
-                      .animate()
-                      .fadeIn(delay: 700.ms, duration: 600.ms),
-
-                  const SizedBox(height: 40),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildLogo() {
-    return AnimatedBuilder(
-      animation: _bgAnim,
-      builder: (_, __) {
-        return Container(
-          width: 96,
-          height: 96,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: LinearGradient(
-              colors: [AppColors.gradStart, AppColors.accentTertiary, AppColors.accentSecondary],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.accentPrimary.withValues(alpha: 0.4 + _bgAnim.value * 0.2),
-                blurRadius: 30 + _bgAnim.value * 15,
-                spreadRadius: 4,
-              ),
-            ],
-          ),
-          child: const Icon(Icons.auto_awesome, color: Colors.white, size: 42),
-        );
-      },
-    ).animate(onPlay: (c) => c.repeat(reverse: true))
-        .scale(
-          begin: const Offset(0.95, 0.95),
-          end: const Offset(1.05, 1.05),
-          duration: 2.seconds,
-          curve: Curves.easeInOut,
-        );
-  }
 }
 
-// ─── Welcome Card ─────────────────────────────────────────────────────────────
-class _WelcomeCard extends StatelessWidget {
-  final String greeting;
-  final bool isDark;
-  final TextEditingController nameCtrl;
-  final FocusNode focusNode;
-  final VoidCallback onContinue;
-  final bool isLoading;
-  final bool showCelebration;
-
-  const _WelcomeCard({
-    required this.greeting,
-    required this.isDark,
-    required this.nameCtrl,
-    required this.focusNode,
-    required this.onContinue,
-    required this.isLoading,
-    required this.showCelebration,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(28),
-      decoration: BoxDecoration(
-        color: AppColors.bgSurface,
-        borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: AppColors.aiBubbleBorder),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.accentPrimary.withValues(alpha: 0.08),
-            blurRadius: 40,
-            spreadRadius: 5,
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Greeting
-          Text(
-            '$greeting!',
-            style: GoogleFonts.inter(
-              fontSize: 22,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            'What should I call you?',
-            style: GoogleFonts.inter(
-              fontSize: 14,
-              color: AppColors.textSecondary,
-            ),
-          ),
-
-          const SizedBox(height: 24),
-
-          // Name input
-          Container(
-            decoration: BoxDecoration(
-              color: AppColors.bgCard,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.aiBubbleBorder),
-            ),
-            child: TextField(
-              controller: nameCtrl,
-              focusNode: focusNode,
-              style: GoogleFonts.inter(
-                fontSize: 16,
-                color: AppColors.textPrimary,
-                fontWeight: FontWeight.w500,
-              ),
-              textCapitalization: TextCapitalization.words,
-              decoration: InputDecoration(
-                hintText: 'Your name...',
-                hintStyle: GoogleFonts.inter(
-                  color: AppColors.textMuted,
-                  fontSize: 16,
-                ),
-                prefixIcon: Icon(Icons.person_outline_rounded,
-                    color: AppColors.accentPrimary, size: 20),
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 16,
-                ),
-              ),
-              onSubmitted: (_) => onContinue(),
-            ),
-          ),
-
-          const SizedBox(height: 20),
-
-          // Continue button
-          _ContinueButton(
-            onTap: onContinue,
-            isLoading: isLoading,
-            showCelebration: showCelebration,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ContinueButton extends StatefulWidget {
+class _Control extends StatelessWidget {
+  final IconData icon;
+  final String label;
   final VoidCallback onTap;
-  final bool isLoading;
-  final bool showCelebration;
-
-  const _ContinueButton({
-    required this.onTap,
-    required this.isLoading,
-    required this.showCelebration,
-  });
+  final bool primary;
+  const _Control(
+      {required this.icon,
+      required this.label,
+      required this.onTap,
+      this.primary = false});
 
   @override
-  State<_ContinueButton> createState() => _ContinueButtonState();
-}
-
-class _ContinueButtonState extends State<_ContinueButton> {
-  bool _pressed = false;
-
-  @override
-  Widget build(BuildContext context) {
-    if (widget.showCelebration) {
-      return Container(
-        height: 56,
-        decoration: BoxDecoration(
-          color: AppColors.success.withValues(alpha: 0.15),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.success.withValues(alpha: 0.4)),
-        ),
-        child: Center(
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.celebration_rounded, color: AppColors.success, size: 22),
-              const SizedBox(width: 10),
-              Text(
-                'Welcome! Launching Rama AI... 🚀',
-                style: GoogleFonts.inter(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.success,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ).animate().scale(duration: 300.ms, curve: Curves.elasticOut);
-    }
-
-    return GestureDetector(
-      onTapDown: (_) => setState(() => _pressed = true),
-      onTapUp: (_) {
-        setState(() => _pressed = false);
-        widget.onTap();
-      },
-      onTapCancel: () => setState(() => _pressed = false),
-      child: AnimatedContainer(
-        duration: 150.ms,
-        height: 56,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [AppColors.gradStart, AppColors.accentSecondary],
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-          ),
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: _pressed
-              ? []
-              : [
-                  BoxShadow(
-                    color: AppColors.accentPrimary.withValues(alpha: 0.4),
-                    blurRadius: 20,
-                    offset: const Offset(0, 6),
-                  ),
-                ],
-        ),
-        child: Center(
-          child: widget.isLoading
-              ? const SizedBox(
-                  width: 22,
-                  height: 22,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2.5,
-                    valueColor: AlwaysStoppedAnimation(Colors.white),
-                  ),
-                )
-              : Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Let\'s Go',
-                      style: GoogleFonts.inter(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    const Icon(Icons.arrow_forward_rounded,
-                        color: Colors.white, size: 20),
-                  ],
-                ),
-        ),
-      ).animate(target: _pressed ? 1 : 0)
-          .scale(begin: const Offset(1, 1), end: const Offset(0.97, 0.97),
-              duration: 100.ms),
-    );
-  }
-}
-
-// ─── Feature Pills ────────────────────────────────────────────────────────────
-class _FeaturePills extends StatelessWidget {
-  final bool isDark;
-  const _FeaturePills({required this.isDark});
-
-  @override
-  Widget build(BuildContext context) {
-    final features = [
-      (Icons.offline_bolt_rounded, 'Fully Offline'),
-      (Icons.history_rounded, 'Chat History'),
-      (Icons.lock_rounded, '100% Private'),
-      (Icons.speed_rounded, 'Fast & Responsive'),
-    ];
-
-    return Wrap(
-      spacing: 10,
-      runSpacing: 10,
-      alignment: WrapAlignment.center,
-      children: features.asMap().entries.map((e) {
-        final delay = e.key * 100;
-        final (icon, label) = e.value;
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
-          decoration: BoxDecoration(
-            color: AppColors.bgSurface,
-            borderRadius: BorderRadius.circular(30),
-            border: Border.all(color: AppColors.aiBubbleBorder),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, size: 15, color: AppColors.accentSecondary),
-              const SizedBox(width: 6),
-              Text(
-                label,
-                style: GoogleFonts.inter(
-                  fontSize: 12,
-                  color: AppColors.textSecondary,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-        ).animate().fadeIn(
-              delay: Duration(milliseconds: 700 + delay),
-              duration: 400.ms,
-            );
-      }).toList(),
-    );
-  }
-}
-
-// ─── Animated Background ──────────────────────────────────────────────────────
-class _AnimatedBg extends StatelessWidget {
-  final AnimationController controller;
-  final bool isDark;
-  const _AnimatedBg({required this.controller, required this.isDark});
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: controller,
-      builder: (_, __) {
-        final t = controller.value;
-        return Stack(
+  Widget build(BuildContext context) => GestureDetector(
+        onTap: onTap,
+        behavior: HitTestBehavior.opaque,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Positioned(
-              top: -100 + (t * 40),
-              left: -80 + (t * 30),
-              child: Container(
-                width: 320,
-                height: 320,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.accentPrimary.withValues(alpha: isDark ? 0.06 : 0.05),
-                ),
+            AnimatedContainer(
+              duration: 220.ms,
+              width: primary ? 62 : 48,
+              height: primary ? 62 : 48,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: primary ? AppColors.accentPrimary : AppColors.bgBase,
               ),
+              child: Icon(icon,
+                  color: primary ? Colors.white : AppColors.textPrimary,
+                  size: primary ? 26 : 21),
             ),
-            Positioned(
-              bottom: 80 + (t * 50),
-              right: -100 + (t * 30),
-              child: Container(
-                width: 280,
-                height: 280,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.accentSecondary.withValues(alpha: isDark ? 0.04 : 0.04),
-                ),
-              ),
-            ),
-            Positioned(
-              top: 200 + (t * 30),
-              right: 20 + (t * 20),
-              child: Container(
-                width: 180,
-                height: 180,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.accentTertiary.withValues(alpha: isDark ? 0.035 : 0.03),
-                ),
-              ),
-            ),
+            const SizedBox(height: 7),
+            Text(label,
+                style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textSecondary)),
           ],
-        );
-      },
-    );
-  }
+        ),
+      );
+}
+
+class _MascotFallback extends StatelessWidget {
+  const _MascotFallback();
+
+  @override
+  Widget build(BuildContext context) => Stack(
+        alignment: Alignment.center,
+        children: [
+          Container(
+              width: 154,
+              height: 128,
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(48),
+                  boxShadow: AppShadows.card)),
+          Container(
+            width: 112,
+            height: 72,
+            decoration: BoxDecoration(
+                color: const Color(0xFF2A2927),
+                borderRadius: BorderRadius.circular(32)),
+            child: const Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Icon(Icons.circle, color: Color(0xFFD9B184), size: 16),
+                  Icon(Icons.circle, color: Color(0xFFD9B184), size: 16),
+                ]),
+          ),
+        ],
+      );
 }

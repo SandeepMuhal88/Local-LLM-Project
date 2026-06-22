@@ -26,7 +26,8 @@ class AppProvider extends ChangeNotifier {
     if (savedId != null) {
       _currentSession = _sessions.firstWhere(
         (s) => s.id == savedId,
-        orElse: () => _sessions.isNotEmpty ? _sessions.first : ChatSession.create(),
+        orElse: () =>
+            _sessions.isNotEmpty ? _sessions.first : ChatSession.create(),
       );
     }
     _isLoaded = true;

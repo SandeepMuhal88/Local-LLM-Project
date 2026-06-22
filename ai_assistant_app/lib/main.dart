@@ -28,14 +28,12 @@ class RamaAIApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<AppProvider>();
-    AppColors.init(provider.isDarkMode);
-
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Rama AI',
       theme: AppTheme.light,
-      darkTheme: AppTheme.dark,
-      themeMode: provider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+      darkTheme: AppTheme.light,
+      themeMode: ThemeMode.light,
       home: _RootGate(provider: provider),
     );
   }
@@ -74,16 +72,18 @@ class _RootGateState extends State<_RootGate> {
                   Container(
                     width: 80,
                     height: 80,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       shape: BoxShape.circle,
                       gradient: LinearGradient(
-                        colors: [AppColors.gradStart, AppColors.accentSecondary],
+                        colors: [
+                          AppColors.gradStart,
+                          AppColors.accentSecondary
+                        ],
                       ),
                     ),
-                    child: const Icon(Icons.auto_awesome, color: Colors.white, size: 36),
-                  )
-                      .animate(onPlay: (c) => c.repeat(reverse: true))
-                      .scale(
+                    child: const Icon(Icons.auto_awesome,
+                        color: Colors.white, size: 36),
+                  ).animate(onPlay: (c) => c.repeat(reverse: true)).scale(
                         begin: const Offset(0.9, 0.9),
                         end: const Offset(1.1, 1.1),
                         duration: 1.seconds,

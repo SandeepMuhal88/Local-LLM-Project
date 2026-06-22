@@ -20,7 +20,8 @@ class SettingsScreen extends StatelessWidget {
         elevation: 0,
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
-          icon: Icon(Icons.arrow_back_ios_rounded, color: AppColors.textPrimary, size: 20),
+          icon: const Icon(Icons.arrow_back_ios_rounded,
+              color: AppColors.textPrimary, size: 20),
         ),
         title: Text(
           'Settings',
@@ -41,61 +42,68 @@ class SettingsScreen extends StatelessWidget {
           const SizedBox(height: 8),
 
           // ── Appearance section ───────────────────────────────────────────
-          _SectionHeader(title: 'APPEARANCE')
-              .animate().fadeIn(duration: 400.ms),
+          const _SectionHeader(title: 'APPEARANCE')
+              .animate()
+              .fadeIn(duration: 400.ms),
 
           const SizedBox(height: 10),
 
           _SettingCard(
             child: _ThemeTile(provider: provider),
-          ).animate().fadeIn(delay: 100.ms, duration: 400.ms)
+          )
+              .animate()
+              .fadeIn(delay: 100.ms, duration: 400.ms)
               .slideX(begin: 0.05, end: 0),
 
           const SizedBox(height: 24),
 
           // ── About section ────────────────────────────────────────────────
-          _SectionHeader(title: 'ABOUT')
-              .animate().fadeIn(delay: 200.ms, duration: 400.ms),
+          const _SectionHeader(title: 'ABOUT')
+              .animate()
+              .fadeIn(delay: 200.ms, duration: 400.ms),
 
           const SizedBox(height: 10),
 
           _SettingCard(
             child: Column(
               children: [
-                _InfoTile(
+                const _InfoTile(
                   icon: Icons.auto_awesome,
                   label: 'App Name',
                   value: 'Rama AI',
                 ),
                 _Divider(),
-                _InfoTile(
+                const _InfoTile(
                   icon: Icons.tag_rounded,
                   label: 'Version',
                   value: '1.0.0',
                 ),
                 _Divider(),
-                _InfoTile(
+                const _InfoTile(
                   icon: Icons.offline_bolt_rounded,
                   label: 'Mode',
                   value: 'Fully Offline',
                   valueColor: AppColors.success,
                 ),
                 _Divider(),
-                _InfoTile(
+                const _InfoTile(
                   icon: Icons.storage_rounded,
                   label: 'Data Storage',
                   value: 'Local Device Only',
                 ),
               ],
             ),
-          ).animate().fadeIn(delay: 300.ms, duration: 400.ms)
+          )
+              .animate()
+              .fadeIn(delay: 300.ms, duration: 400.ms)
               .slideX(begin: 0.05, end: 0),
 
           const SizedBox(height: 24),
 
           // ── Danger zone ─────────────────────────────────────────────────
-          _SectionHeader(title: 'DATA')
-              .animate().fadeIn(delay: 400.ms, duration: 400.ms),
+          const _SectionHeader(title: 'DATA')
+              .animate()
+              .fadeIn(delay: 400.ms, duration: 400.ms),
 
           const SizedBox(height: 10),
 
@@ -110,7 +118,9 @@ class SettingsScreen extends StatelessWidget {
                 ),
               ],
             ),
-          ).animate().fadeIn(delay: 500.ms, duration: 400.ms)
+          )
+              .animate()
+              .fadeIn(delay: 500.ms, duration: 400.ms)
               .slideX(begin: 0.05, end: 0),
 
           const SizedBox(height: 40),
@@ -120,7 +130,7 @@ class SettingsScreen extends StatelessWidget {
             child: Column(
               children: [
                 ShaderMask(
-                  shaderCallback: (b) => LinearGradient(
+                  shaderCallback: (b) => const LinearGradient(
                     colors: [AppColors.gradStart, AppColors.accentSecondary],
                   ).createShader(b),
                   child: Text(
@@ -165,7 +175,8 @@ class SettingsScreen extends StatelessWidget {
         ),
         content: Text(
           'This will permanently delete all your chat history. This cannot be undone.',
-          style: GoogleFonts.inter(color: AppColors.textSecondary, fontSize: 14),
+          style:
+              GoogleFonts.inter(color: AppColors.textSecondary, fontSize: 14),
         ),
         actions: [
           TextButton(
@@ -256,7 +267,9 @@ class _ThemeTile extends StatelessWidget {
             ),
             child: Center(
               child: Icon(
-                provider.isDarkMode ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
+                provider.isDarkMode
+                    ? Icons.dark_mode_rounded
+                    : Icons.light_mode_rounded,
                 size: 20,
                 color: provider.isDarkMode
                     ? AppColors.accentSecondary
@@ -299,8 +312,11 @@ class _ThemeTile extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(14),
                 gradient: provider.isDarkMode
-                    ? LinearGradient(
-                        colors: [AppColors.accentPrimary, AppColors.accentSecondary],
+                    ? const LinearGradient(
+                        colors: [
+                          AppColors.accentPrimary,
+                          AppColors.accentSecondary
+                        ],
                       )
                     : null,
                 color: provider.isDarkMode ? null : AppColors.textMuted,
@@ -342,7 +358,11 @@ class _InfoTile extends StatelessWidget {
   final String label;
   final String value;
   final Color? valueColor;
-  const _InfoTile({required this.icon, required this.label, required this.value, this.valueColor});
+  const _InfoTile(
+      {required this.icon,
+      required this.label,
+      required this.value,
+      this.valueColor});
 
   @override
   Widget build(BuildContext context) {
@@ -354,7 +374,8 @@ class _InfoTile extends StatelessWidget {
           const SizedBox(width: 14),
           Text(
             label,
-            style: GoogleFonts.inter(fontSize: 15, color: AppColors.textPrimary),
+            style:
+                GoogleFonts.inter(fontSize: 15, color: AppColors.textPrimary),
           ),
           const Spacer(),
           Text(
@@ -377,7 +398,11 @@ class _ActionTile extends StatelessWidget {
   final String label;
   final Color color;
   final VoidCallback onTap;
-  const _ActionTile({required this.icon, required this.label, required this.color, required this.onTap});
+  const _ActionTile(
+      {required this.icon,
+      required this.label,
+      required this.color,
+      required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -399,7 +424,8 @@ class _ActionTile extends StatelessWidget {
               ),
             ),
             const Spacer(),
-            Icon(Icons.chevron_right_rounded, size: 20, color: color.withValues(alpha: 0.5)),
+            Icon(Icons.chevron_right_rounded,
+                size: 20, color: color.withValues(alpha: 0.5)),
           ],
         ),
       ),
