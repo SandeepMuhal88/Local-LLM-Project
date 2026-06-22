@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'message.dart';
+import '../services/chat_service.dart';
 
 class ChatSession {
   final String id;
@@ -46,5 +49,34 @@ class ChatSession {
     final last = messages.last;
     final txt = last.text.trim();
     return txt.length > 50 ? '${txt.substring(0, 50)}...' : txt;
+  }
+
+  /// Send [question] to the backend and stream the assistant reply.
+  ///
+  /// Returns a stream of incremental tokens/chunks from the backend so the
+  /// UI can render progressive responses. When the stream completes the
+  /// assistant message is appended to `messages`.
+  Stream<String> askAndAppend(String question, {String? baseUrl}) {
+    final service = ChatService(baseUrl: baseUrl ?? 'http://127.0.0.1:8000');
+
+    // append user message immediately
+    messages.add(Message(text: question, isUser: true));
+
+    final controller = StreamController<String>();
+    final buffer = StringBuffer();
+
+    service.askStream(question).listen((chunk) {
+      controller.add(chunk);
+      buffer.write(chunk);
+    }, onError: (e, st) {
+      controller.addError(e, st);
+      controller.close();
+    }, onDone: () {
+      final assistantText = buffer.toString();
+      messages.add(Message(text: assistantText, isUser: false));
+      controller.close();
+    });
+
+    return controller.stream;
   }
 }
