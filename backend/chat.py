@@ -1,46 +1,45 @@
 from llama_cpp import Llama
+from pathlib import Path
+import os
+import sys
 
-# load the model
 
-llm=Llama(
-    model_path="../llama.cpp/models/phi-3-mini.gguf",
-    n_threads=8,
-    n_ctx=2048
-)
+def _load_llm():
+    model_path = os.getenv("LLAMA_MODEL_PATH") or str(Path(__file__).resolve().parent.parent / "llama.cpp" / "models" / "phi-3-mini.gguf")
+    threads = max(1, (os.cpu_count() or 1) - 1)
+    return Llama(model_path=model_path, n_threads=threads, n_ctx=2048)
 
-# Conversation memory
-messages = []
 
-print("🤖 Local AI Assistant Started (type 'exit' to stop)\n")
+def repl():
+    llm = None
+    try:
+        llm = _load_llm()
+    except Exception as e:
+        print("Failed to load model:", e)
+        sys.exit(1)
 
-while True:
-    user_input = input("You: ")
+    messages = []
+    print("🤖 Local AI Assistant Started (type 'exit' to stop)\n")
 
-    # Exit condition
-    if user_input.lower() == "exit":
-        print("Exiting...")
-        break
+    try:
+        while True:
+            user_input = input("You: ").strip()
+            if not user_input:
+                continue
+            if user_input.lower() == "exit":
+                print("Exiting...")
+                break
 
-    # Add user message
-    messages.append({
-        "role": "user",
-        "content": user_input
-    })
+            messages.append({"role": "user", "content": user_input})
 
-    # Generate AI response
-    response = llm.create_chat_completion(
-        messages=messages,
-        max_tokens=200,
-        temperature=0.7
-    )
+            response = llm.create_chat_completion(messages=messages, max_tokens=200, temperature=0.7)
+            ai_output = response["choices"][0]["message"]["content"]
 
-    ai_output = response["choices"][0]["message"]["content"]
+            print("\nAI:", ai_output, "\n")
+            messages.append({"role": "assistant", "content": ai_output})
+    except KeyboardInterrupt:
+        print("\nInterrupted. Exiting...")
 
-    # Print AI response
-    print("\nAI:", ai_output, "\n")
 
-    # Save AI response
-    messages.append({
-        "role": "assistant",
-        "content": ai_output
-    })
+if __name__ == "__main__":
+    repl()
